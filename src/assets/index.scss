@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Rammetto+One&display=swap');
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  height: 100vh;
+}
+
+body{
+  margin: 0;
+}
+
+.logo{
+  font-family: 'Rammetto One', cursive;
+  font-size: 30px;
+  letter-spacing: 0.15em;
+  color: #fff;
+  line-height: 1;
+}
+
+.title-h3{
+  font-family: 'Nunito', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 35px;
+  color: #fff;
+}
