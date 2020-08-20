@@ -17,7 +17,7 @@
 
 <style lang="scss">
 .main{
-  height: 100%;
+  min-height: 100%;
   background-color: $bg;
   display: flex;
   flex-direction: column;

@@ -1,14 +1,55 @@
 <template>
   <header class="header">
-    <span class="logo">
+    <router-link to="/" class="logo">
       Quizer
-    </span>
-    <router-link class="header__link" to="/register">Зарегистрироваться</router-link>
+    </router-link>
+    <router-link v-if="path === 'login'" class="header__link" to="/register">Зарегистрироваться</router-link>
+    <router-link v-else-if="path === 'register'" class="header__link" to="/login">Войти</router-link>
+    
+    <v-menu v-else bottom left offset-y content-class="header__dropdown">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          dark
+          text
+          v-bind="attrs"
+          v-on="on"
+          :offset-y="true"
+        >
+          <div class="header__profile d-flex align-center">
+            <h5 class="title-h5">Max</h5>
+            <v-icon  size="15px">$vuetify.icons.expandMore</v-icon>
+          </div>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="(item, i) in items"
+          :key="i"
+          @click=""
+        >
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </header>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      path: null,
+      items: [
+        { title: 'Профиль' },
+        { title: 'Выйти' },
+      ],
+    }
+  },
+  watch: {
+    $route(to) {
+      this.path = to.path.slice(1)
+    }
+  }
 }
 </script>
 
@@ -19,6 +60,7 @@ export default {
     justify-content: space-between;
     padding: 30px 45px;
     padding-bottom: 0;
+    margin-bottom: 30px;
     &__link{
       font-family: Nunito, sans-serif;
       font-style: normal;
@@ -28,6 +70,19 @@ export default {
       letter-spacing: 0.13em;
       text-decoration: none;
       color: $text;
+    }
+    &__profile{
+      h5{
+        margin-right: 4px;
+      }
+    }
+    &__dropdown{
+      .theme--light.v-sheet{
+        background-color: $content-bg;
+      }
+      .theme--light.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled){
+        color: $text!important;
+      }
     }
   }
 </style>

@@ -1,0 +1,36 @@
+.theme--light.v-input{
+  color: $accent!important;
+  input, .theme--light.v-input textarea{
+    color: $text!important;
+  }
+  &.error--text{
+    color: $error!important;
+    .theme--light.v-messages{
+      color: $error!important;
+    }
+    .theme--light.v-label {
+      color: $error!important;
+    }
+    input, .theme--light.v-input textarea{
+      color: $error!important;
+    }
+  }
+  
+}
+.theme--light.v-label {
+  color: $inputLabelColor!important;
+}
+.theme--light.v-text-field{
+  & > .v-input__control > .v-input__slot:before {
+    border-color: rgba($accent, 0.5)!important;
+  }
+  &.error--text > .v-input__control > .v-input__slot:before{
+    border-color: $error!important;
+  }
+}
+.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before {
+  border-color: rgba($accent, 0.7)!important;
+}
+.theme--light.v-counter {
+  color: $accent!important;
+}
