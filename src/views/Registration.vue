@@ -96,7 +96,7 @@ export default {
       if(this.$v.$invalid)
         return
       const data = {
-        name: this.name,
+        username: this.name,
         email: this.email,
         password: this.password
       }

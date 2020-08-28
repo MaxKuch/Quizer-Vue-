@@ -132,7 +132,6 @@ export default {
       letter-spacing: 0.04em;
       color: #fff;
     }
-    
   }
   &__check-icon {
     stroke-dasharray: 16;

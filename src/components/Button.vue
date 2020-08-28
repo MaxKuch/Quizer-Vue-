@@ -1,5 +1,5 @@
 <template>
-  <v-btn rounded class="main-btn" dark :type="type" @click="onClick">
+  <v-btn rounded class="main-btn" :disabled="disabled" dark :type="type" @click="onClick">
       <slot></slot>
   </v-btn>
 </template>
@@ -7,6 +7,10 @@
 <script>
 export default {
   props: {
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     type: {
       type: String,
       default: ''
