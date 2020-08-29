@@ -6,7 +6,7 @@
           <img src="../assets/logo.png" alt="profile-avatar" class="profile__user-avatar">
           <div class="profile__user-info">
             <h5 class="title-h5">
-              Max
+              {{user.name}}
             </h5>
             <p class="parag">Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p>
           </div>
@@ -28,13 +28,15 @@
 </template>
 
 <script>
+  import { mapState } from 'vuex'
   export default {
     data: () => ({
       results: [{
         title: 'Тест на гея',
         description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quis tempus a enim tellus id. Elementum fringilla id suspendisse id et. Odio semper in pulvinar elementum urna, sit. Ullamcorper eget laoreet vel tincidunt vitae mauris porttitor. '
       }]
-    })
+    }),
+    computed: mapState(['user'])
   }
 </script>
 

@@ -4,6 +4,7 @@
       :visible="alert.visible" 
       :title="alert.title" 
       :message="alert.message"
+      :closeModal="closeModal"
     />
     <Form :title="'Войдите'">
       <v-text-field
@@ -43,14 +44,15 @@ export default {
     password: { required, minLength: minLength(8) },
   },
   data: () => ({
-      alert: {
-        visible: false,
-        title: '',
-        message: ''
-      },
-      name: '',
-      password: '',
-      buttonDisabled: false
+    alert: {
+      timeout: null,
+      visible: false,
+      title: '',
+      message: ''
+    },
+    name: '',
+    password: '',
+    buttonDisabled: false
   }),
   computed: {
     user(){
@@ -77,6 +79,11 @@ export default {
     }
   },
   methods: {
+    closeModal(){
+      this.alert.visible = false
+      clearTimeout(this.alert.timeout)
+      this.alert.timeout = null
+    },
     submit () {
       this.$v.$touch()
       if(this.$v.$invalid)
@@ -99,11 +106,10 @@ export default {
         this.alert.title = status
         this.alert.message = message
         this.alert.visible = true
-        setTimeout(() => {
-          this.alert.visible = false
+        this.alert.timeout = setTimeout(() => {
+          this.closeModal()
         }, 4000)
         this.buttonDisabled = false
-        console.error(err)
       })
     }
   },

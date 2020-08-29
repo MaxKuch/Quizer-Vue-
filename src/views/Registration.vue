@@ -1,5 +1,11 @@
 <template>
   <div class="login-page">
+    <Alert 
+      :visible="alert.visible" 
+      :title="alert.title" 
+      :message="alert.message"
+      :closeModal="closeModal"
+    />
     <Form :title="'Зарегистрируйтесь'">
       <v-text-field
         v-model="$v.name.$model"
@@ -32,7 +38,7 @@
         label="Повторите пароль"
       ></v-text-field>
       <div class="d-flex justify-center mt-5">
-        <Button :type="'submit'" :onClick="submit">
+        <Button :disabled="buttonDisabled" :type="'submit'" :onClick="submit">
           Зарегистрироваться
         </Button>
       </div>
@@ -43,14 +49,22 @@
 <script>
 import Form from '@/components/Form'
 import Button from '@/components/Button'
+import Alert from '@/components/Alert'
 import { validationMixin } from 'vuelidate'
 import { required, sameAs, email, minLength } from 'vuelidate/lib/validators'
 export default {
   data: () => ({
+      alert: {
+        timeout: null,
+        visible: false,
+        title: '',
+        message: ''
+      },
       name: '',
       email: '',
       password: '',
-      repeatPassword: ''
+      repeatPassword: '',
+      buttonDisabled: false
   }),
   mixins: [validationMixin],
   validations: {
@@ -91,6 +105,11 @@ export default {
     },
   },
   methods: {
+    closeModal(){
+      this.alert.visible = false
+      clearTimeout(this.alert.timeout)
+      this.alert.timeout = null
+    },
     submit () {
       this.$v.$touch()
       if(this.$v.$invalid)
@@ -100,11 +119,31 @@ export default {
         email: this.email,
         password: this.password
       }
-      console.log(data)
+      this.buttonDisabled = true
+      this.$store.dispatch('register', data)
+      .then(() => {
+        this.name = ''
+        this.email = ''
+        this.password = ''
+        this.repeatPassword = ''
+        this.$v.$reset()
+        this.buttonDisabled = false
+        this.$router.push('/')
+      })
+      .catch((err) => {
+        const {data: {message, status}} = err
+        this.alert.title = status
+        this.alert.message = message
+        this.alert.visible = true
+        this.alert.timeout = setTimeout(() => {
+          this.closeModal()
+        }, 4000)
+        this.buttonDisabled = false
+      })
     }
   },
   components:{
-    Form, Button
+    Form, Button, Alert
   }
 }
 </script>

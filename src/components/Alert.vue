@@ -36,25 +36,21 @@ export default {
     },
     message: {
       type: String
+    },
+    closeModal: {
+      type: Function
     }
   },
   watch: { 
     visible(){
       if(this.alert !== this.visible){
         this.alert = this.visible
-        console.log(this.alert)
-        if(this.alert){
-          this.timeout = setTimeout(() => {
-            console.log('timeout')
-            this.alert = false
-          }, 4000)
-        }
-        else if(this.timeout){
-          console.log('kdsjfgskdjfskdjfkosdf')
-          clearTimeout(this.timeout)
-          this.timeout = null
-        }
       } 
+    },
+    alert(){
+      if(!this.alert){
+        this.closeModal()
+      }
     }
   }
 }
