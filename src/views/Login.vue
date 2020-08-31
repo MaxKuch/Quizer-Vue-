@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
 import Form from '@/components/Form'
 import Button from '@/components/Button'
 import Alert from '@/components/Alert'
@@ -55,9 +56,7 @@ export default {
     buttonDisabled: false
   }),
   computed: {
-    user(){
-      return this.$store.getters.getUser
-    },
+    ...mapState(['user']),
     nameErrors () {
       const errors = []
       if (!this.$v.name.$dirty) return errors

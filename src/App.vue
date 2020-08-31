@@ -30,7 +30,7 @@ export default {
   computed: {
     layout() {
       return (this.$route.meta.layout || 'main') + '-layout'
-    }
+    },
   },
   methods: {
     closeModal(){
@@ -40,9 +40,14 @@ export default {
     }
   },
   mounted(){
+    const path = new URL(location.href).pathname.slice(1)
+    this.$store.commit('addPath', path)
     const token = window.localStorage.getItem('token')
     if(token){
       this.$store.dispatch('getUserData', token)
+      .then(() => {
+        this.$store.dispatch('redirect')
+      })
       .catch((err) => {
         const {data: {message, status}} = err
         this.alert.title = status
@@ -52,6 +57,9 @@ export default {
           this.closeModal()
         }, 4000)
       })
+    }
+    else{
+      this.$store.dispatch('redirect')
     }
   },
   components: {
