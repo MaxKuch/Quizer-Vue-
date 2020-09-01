@@ -21,7 +21,7 @@
   background-color: $bg;
   display: flex;
   flex-direction: column;
-  > div{
+  .wrapper{
     flex-grow: 1;
     display: flex;
     justify-content: center;

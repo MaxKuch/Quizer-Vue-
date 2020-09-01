@@ -23,13 +23,13 @@ const routes = [
     component: () => import('../views/Registration.vue')
   },
   {
-    path: '/quiz',
+    path: '/quiz/:id',
     name: 'Quiz',
     meta: {layout: "main"},
     component: () => import('../views/Quiz.vue')
   },
   {
-    path: '/result',
+    path: '/result/:id/:score',
     name: 'Result',
     meta: {layout: "main"},
     component: () => import('../views/ResultPage.vue')

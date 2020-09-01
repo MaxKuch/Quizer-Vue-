@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex justify-center align-center">
+  <div class="wrapper d-flex justify-center align-center">
     <div class="content-container">
       <div class="profile">
         <div class="profile__user d-flex align-center">

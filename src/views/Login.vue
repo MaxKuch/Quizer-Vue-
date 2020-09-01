@@ -1,5 +1,5 @@
 <template>
-  <div class="login-page">
+  <div class="wrapper login-page">
     <Alert 
       :visible="alert.visible" 
       :title="alert.title" 

@@ -20,10 +20,10 @@ export default {
   data() {
     return {
         alert: {
-        timeout: null,
-        visible: false,
-        title: '',
-        message: ''
+          timeout: null,
+          visible: false,
+          title: '',
+          message: ''
       }
     }
   },

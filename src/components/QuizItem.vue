@@ -1,14 +1,13 @@
 <template>
   <section class="quiz-item">
     <div class="quiz-item__header d-flex flex-wrap">
-      <h2 class="title-h2">
-        <span>{{title}}</span>
+      <h2 class="quiz-item__title title-h2">
+        <router-link :to="`/quiz/${id}`">{{title}}</router-link>
         <div class="quiz-item__author">
           <v-icon size="18px">{{profileIcon}}</v-icon>
           <span>{{author}}</span>
         </div>
       </h2>
-      
     </div>
     <p class="parag">{{description}}</p>
     <div class="d-flex">
@@ -27,7 +26,7 @@
 <script>
 import { mdiAccountCircle, mdiHeartOutline, mdiUnfoldMoreHorizontal } from '@mdi/js'
 export default {
-  props: ['title', 'author', 'description', 'likes'],
+  props: ['title', 'author', 'description', 'likes', 'id'],
   data: () => ({
       profileIcon: mdiAccountCircle,
       heartIcon: mdiHeartOutline,
@@ -48,6 +47,11 @@ export default {
       > span{
         margin-right: 10px;
       }
+    }
+  }
+  &__title{
+    a{
+      color: $text;
     }
   }
   &__author{

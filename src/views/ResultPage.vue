@@ -1,16 +1,16 @@
 <template>
-  <div class="d-flex justify-center align-center">
-    <div class="content-container">
-      <div class="result">
-        <h2 class="title-h2 text-center">Поздравляем, вы дурачок!</h2>
-        <p class="parag">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-          Quis tempus a enim tellus id. Elementum fringilla id suspendisse id et. 
-          Odio semper in pulvinar elementum urna, sit. 
-          Ullamcorper eget laoreet vel tincidunt vitae mauris porttitor. 
-          Diam turpis sed at sit est. Nisl cursus amet lobortis ornare in. 
-          Cras ipsum volutpat tristique sit. Turpis egestas quisque sed non in. 
-          Risus, mauris tristique convallis senectus in.
+  <div class="wrapper d-flex justify-center align-center">
+    <div  class="content-container">
+      <div v-if="loading" class="d-flex justify-center">
+        <v-progress-circular
+          indeterminate
+          color="#0434B0"
+        ></v-progress-circular>
+      </div>
+      <div v-else class="result">
+        <h2 v-if="yourResult" class="title-h2 text-center">{{yourResult.title}}</h2>
+        <p v-if="yourResult && yourResult.description" class="parag">
+          {{yourResult.description}}
         </p>
         <div class="d-flex flex-column align-center">
           <v-btn text>
@@ -18,7 +18,7 @@
               Вернуться на главную
             </router-link>
           </v-btn>
-          <div class="result__share">
+          <div v-if="user.name" class="result__share">
             <Button>
               Поделиться результатом
             </Button>
@@ -30,8 +30,36 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import Button from '@/components/Button.vue'
+import { quizesAPI } from '../utils/api'
 export default {
+  data(){
+    return {
+      results: [],
+      loading: false
+    }
+  },
+  mounted(){
+    this.loading = true
+    quizesAPI.getQuizResults(this.$route.params.id)
+    .then(({data}) => {
+      this.loading = false
+      this.results = data
+    })
+  },
+  computed: {
+    ...mapState(['user']),
+    yourResult(){
+      const score = this.$route.params.score
+      return this.results.filter(result => {
+        if(score >= result.scoreRange.start && score <= result.scoreRange.end)
+          return true
+        else
+          return false
+      })[0]
+    }
+  },
   components: {
     Button
   }

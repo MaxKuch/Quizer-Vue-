@@ -1,45 +1,76 @@
 <template>
-  <div class="d-flex justify-center">
-    <div class="content-container">
-      <QuizItem 
-        v-for="(quizItem, idx) in quizItems" 
-        :key="idx"
-        :title="quizItem.title"
-        :author="quizItem.author"
-        :description="quizItem.description"
-        :likes="quizItem.likes"
-      />
+  <div>
+    <Alert 
+      :visible="alert.visible" 
+      :title="alert.title" 
+      :message="alert.message"
+      :closeModal="closeModal"
+    />
+    <div class="wrapper d-flex justify-center">
+      <div class="content-container">
+        <div v-if="loading" class="d-flex justify-center">
+          <v-progress-circular
+            indeterminate
+            color="#0434B0"
+          ></v-progress-circular>
+        </div>
+        <QuizItem v-else
+          v-for="quizItem in quizItems" 
+          :key="quizItem.id"
+          :id="quizItem.id"
+          :title="quizItem.title"
+          :author="quizItem.author"
+          :description="quizItem.description"
+          :likes="quizItem.likes"
+        />
+      </div>
     </div>
   </div>
 </template>
-
 <script>
+
 import QuizItem from '@/components/QuizItem.vue'
+import Alert from '@/components/Alert.vue'
+import { quizesAPI } from '@/utils/api'
 export default {
   data() {
     return {
-      quizItems: [{
-        title: 'Кто ты из BTS',
-        author: 'Jongook',
-        description: 'Определи кто ты из легендарной корейской boys-band BTS',
-        likes: 4749
-      },
-      {
-        title: 'Какого бы жанра был фильм, снятый по твоей жизни',
-        author: 'James',
-        description: 'Представь, что о твоей жизни сняли бы фильм. Какого жанра он бы был?',
-        likes: 2134
-      },
-      {
-        title: 'Тест на гея',
-        author: 'Lana',
-        description: 'Проверь, есть ли у тебя склонность заглядываться на сочные мужские багеты',
-        likes: 1098
-      }]
+      loading: false,
+      quizItems: [],
+      alert: {
+        timeout: null,
+        visible: false,
+        title: '',
+        message: ''
+      }
+    }
+  },
+  mounted(){
+    this.loading = true
+    quizesAPI.quizesList()
+    .then(({data})=> {
+      this.loading = false
+      this.quizItems = data
+    })
+    .catch(err => {
+      this.loading = false
+      this.alert.title = status
+      this.alert.message = message
+      this.alert.visible = true
+      this.alert.timeout = setTimeout(() => {
+        this.closeModal()
+      }, 4000)
+    })
+  },
+  methods: {
+    closeModal(){
+      this.alert.visible = false
+      clearTimeout(this.alert.timeout)
+      this.alert.timeout = null
     }
   },
   components: {
-    QuizItem
+    QuizItem, Alert
   }
 }
 </script>

@@ -10,3 +10,9 @@ export const userAPI = {
       'Authorization': `Bearer ${token}`
   }})
 }
+
+export const quizesAPI = {
+  quizesList: () => axios.get('/quizes-list'),
+  getQuiz: id => axios.get(`/quiz/${id}`),
+  getQuizResults: (id) => axios.get(`/quiz-results/${id}`)
+}

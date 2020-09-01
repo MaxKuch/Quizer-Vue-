@@ -1,13 +1,32 @@
 <template>
-  <div class="d-flex justify-center align-center">
-    <div class="content-container">
-      <div class="quiz">
-        <h2 class="title-h2 text-center quiz__num">Вопрос 1 из 12</h2>
-        <h4 class="title-h4 quiz__question">{{question}}</h4>
-        <div class="quiz__options">
-          <div class="quiz__option" v-for="option in options" :key="option.value" >
-            <input type="radio" name="option" :id="option.value" :value="option.value" v-model="currentOption"/>
-            <label :for="option.value">
+  <div class="wrapper d-flex justify-center align-center">
+    <div class="quiz__content-container content-container">
+      <div v-if="loading" class="d-flex justify-center">
+        <v-progress-circular
+          indeterminate
+          color="#0434B0"
+        ></v-progress-circular>
+      </div>
+      <div v-else class="quiz">
+        <h2 class="title-h2 text-center quiz__num">
+          Вопрос {{questionNumber + 1}} из {{questionsAmount}}
+        </h2>
+        <h4 class="title-h4 quiz__question">
+          {{currentQuestion ? currentQuestion.title : ''}}
+        </h4>
+        <div v-if="currentQuestion" class="quiz__options">
+          <div class="quiz__option" 
+            v-for="option in currentQuestion.options" 
+            :key="option._id"
+          >
+            <input 
+              type="radio" 
+              name="option" 
+              :id="option._id" 
+              :value="option.score" 
+              v-model="currentOption"
+            />
+            <label :for="option._id">
               <div class="quiz__icon quiz__icon--checked">
                 <svg transform="translate(-2, -4)"
                   width="22" 
@@ -16,23 +35,32 @@
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path class="quiz__check-icon" transform="scale(1.4, 1.4) translate(-4, 0)" d="M8 6.5L11.6429 10L19 2.5" stroke="white" stroke-width="2" />
+                  <path 
+                    class="quiz__check-icon" 
+                    transform="scale(1.4, 1.4) translate(-4, 0)" d="M8 6.5L11.6429 10L19 2.5" 
+                    stroke="white" 
+                    stroke-width="2" 
+                  />
                 </svg>
               </div>
               <div class="quiz__icon quiz__icon--disabled"></div>
-              {{option.label}}
+              {{option.option}}
             </label>
           </div>
         </div>
         <div class="quiz__control d-flex justify-center">
           <div class="quiz__prev">
-            <v-btn disabled icon>
-              <v-icon size="80px">{{arrowLeft}}</v-icon>
+            <v-btn :disabled="arrowLeft.disabled" @click="prevQuestion" icon>
+              <v-icon size="80px">{{arrowLeft.icon}}</v-icon>
             </v-btn>
           </div>
           <div class="quiz__next">
-            <v-btn icon>
-              <v-icon size="80px">{{arrowRight}}</v-icon>
+            <v-btn 
+              :disabled="arrowRight.disabled" 
+              @click="nextQuestion" 
+              icon
+            >
+              <v-icon size="80px">{{arrowRight.icon}}</v-icon>
             </v-btn>
           </div>
         </div>
@@ -42,42 +70,90 @@
 </template>
 
 <script>
-import { mdiMenuRight, mdiMenuLeft} from "@mdi/js";
+import { mdiMenuRight, mdiMenuLeft} from "@mdi/js"
+import { quizesAPI } from '../utils/api'
 
 export default {
   data: () => {
-    const options = [{
-      label: 'Умный',
-      value: 'smart'
-    },
-    {
-      label: 'Веселый',
-      value: 'funny'
-    },
-    {
-      label: 'Грустный',
-      value: 'sad'
-    }]
     return {
-    arrowRight: mdiMenuRight,
-    arrowLeft: mdiMenuLeft,
-    question: 'Опишите себя как личность',
-    options,
-    currentOption: ''
+    quizId: null,
+    loading: false,
+    questions: [],
+    questionNumber: 0,
+    arrowRight: {
+      icon: mdiMenuRight,
+      disabled: true
+    },
+    arrowLeft: {
+      icon: mdiMenuLeft,
+      disabled: true
+    },
+    scoresArray: [],
+    totalScore: null,
+    currentOption: null
   }},
-  watch: {
-    currentOption(){
-      console.log(this.currentOption)
+  mounted(){
+    this.loading = true
+    quizesAPI.getQuiz(this.$route.params.id)
+    .then(({data}) => {
+      this.loading = false
+      this.questions = data.questions
+      this.quizId = data.id
+    })
+  },
+  methods: {
+    nextQuestion() {
+      if(this.questionNumber !== this.questionsAmount - 1){
+        this.scoresArray.push(this.currentOption)
+        this.questionNumber += 1
+        this.currentOption = null
+      }
+      else{
+        this.scoresArray.push(this.currentOption)
+        this.result()
+      }
+    },
+    prevQuestion(){
+      this.currentOption = null
+      this.scoresArray.pop()
+      this.questionNumber -= 1
+    },
+    result(){
+      const totalScore = this.scoresArray.reduce((total, score) => total + score, 0)
+      this.$router.push(`/result/${this.quizId}/${totalScore}`)
     }
   },
-};
+  computed: {
+    questionsAmount(){
+      return this.questions.length
+    },
+    currentQuestion(){
+      return this.questions[this.questionNumber]
+    }
+  },
+  watch: {
+    currentOption(){
+      if(this.currentOption !== null)
+        this.arrowRight.disabled = false
+      else
+        this.arrowRight.disabled = true
+    },
+    questionNumber(){
+      if(this.questionNumber === 0)
+        this.arrowLeft.disabled = true
+      else
+        this.arrowLeft.disabled = false
+    }
+  },
+}
 </script>
 
 <style lang="scss">
-.content-container {
-  margin-bottom: 80px;
-}
+
 .quiz {
+  &__content-container {
+    margin-bottom: 30px;
+  }
   &__num {
     margin-bottom: 45px !important;
   }
