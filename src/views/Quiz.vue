@@ -1,12 +1,7 @@
 <template>
   <div class="wrapper d-flex justify-center align-center">
     <div class="quiz__content-container content-container">
-      <div v-if="loading" class="d-flex justify-center">
-        <v-progress-circular
-          indeterminate
-          color="#0434B0"
-        ></v-progress-circular>
-      </div>
+      <Loader v-if="loading"/>
       <div v-else class="quiz">
         <h2 class="title-h2 text-center quiz__num">
           Вопрос {{questionNumber + 1}} из {{questionsAmount}}
@@ -72,6 +67,7 @@
 <script>
 import { mdiMenuRight, mdiMenuLeft} from "@mdi/js"
 import { quizesAPI } from '../utils/api'
+import Loader from '@/components/Loader.vue'
 
 export default {
   data: () => {
@@ -145,6 +141,9 @@ export default {
         this.arrowLeft.disabled = false
     }
   },
+  components: {
+    Loader
+  }
 }
 </script>
 

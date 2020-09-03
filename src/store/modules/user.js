@@ -2,11 +2,11 @@ import { userAPI } from '../../utils/api'
 
 export default({
   actions: {
-    async getUserData(ctx, token){
+    async verify(ctx, token){
       try{
-        const {data: {data}} = await userAPI.getUserData(token)
+        const {data: {data}} = await userAPI.verify(token)
         const user = data.user
-        ctx.commit('updateUser', {name: user.name})
+        ctx.commit('updateUser', {name: user.name, id: user.id, isAuth: true})
         return Promise.resolve()
       } catch(err){
         console.error(err)
@@ -18,7 +18,7 @@ export default({
         const {data: {data}} = await userAPI.login(postData)
         window.localStorage.setItem('token', data.jwt)
         const user = data.user
-        ctx.commit('updateUser', {name: user.name})
+        ctx.commit('updateUser', {name: user.name, id: user.id, isAuth: true})
         return Promise.resolve()
       } catch(err){
         return Promise.reject(err.response)
@@ -29,7 +29,7 @@ export default({
         const {data: {data}} = await userAPI.register(postData)
         window.localStorage.setItem('token', data.jwt)
         const user = data.user
-        ctx.commit('updateUser', {name: user.name})
+        ctx.commit('updateUser', {name: user.name, id: user.id, isAuth: true})
         return Promise.resolve()
       } catch(err){
         return Promise.reject(err.response)
@@ -37,18 +37,23 @@ export default({
     },
     logout(ctx){
       window.localStorage.removeItem('token')
-      ctx.commit('updateUser', {name: null})
+      ctx.commit('updateUser', {name: null, id: null, isAuth: false})
     }
   },
   mutations: {
     updateUser(state, user){
       state.name = user.name
+      state.id = user.id
+      state.isAuth = user.isAuth
     }
   },
   state: {
-    name: null
+    name: null,
+    id: null,
+    isAuth: false
   },
   getters: {
-    getUserName: state => state.name
+    getUserName: state => state.name,
+    getUserId: state => state.id
   }
 })

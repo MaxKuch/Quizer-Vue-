@@ -6,7 +6,7 @@
     <router-link v-if="path === 'login'" class="header__link" to="/register">Зарегистрироваться</router-link>
     <router-link v-else-if="path === 'register'" class="header__link" to="/login">Войти</router-link>
     
-    <v-menu v-else-if="user.name" bottom left offset-y content-class="header__dropdown">
+    <v-menu v-else-if="user.isAuth" bottom left offset-y content-class="header__dropdown">
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           dark
@@ -46,7 +46,7 @@ export default {
           title: 'Профиль', 
           action: () => {
             if(this.path !== 'profile')
-              this.$router.push('/profile')
+              this.$router.push(`/profile/${this.user.id}`)
           }
         },
         { 

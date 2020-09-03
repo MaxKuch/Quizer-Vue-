@@ -1,12 +1,7 @@
 <template>
   <div class="wrapper d-flex justify-center align-center">
     <div  class="content-container">
-      <div v-if="loading" class="d-flex justify-center">
-        <v-progress-circular
-          indeterminate
-          color="#0434B0"
-        ></v-progress-circular>
-      </div>
+      <Loader v-if="loading"/>
       <div v-else class="result">
         <h2 v-if="yourResult" class="title-h2 text-center">{{yourResult.title}}</h2>
         <p v-if="yourResult && yourResult.description" class="parag">
@@ -18,7 +13,7 @@
               Вернуться на главную
             </router-link>
           </v-btn>
-          <div v-if="user.name" class="result__share">
+          <div v-if="user.isAuth" @click="shareResult" class="result__share">
             <Button>
               Поделиться результатом
             </Button>
@@ -32,7 +27,8 @@
 <script>
 import { mapState } from 'vuex'
 import Button from '@/components/Button.vue'
-import { quizesAPI } from '../utils/api'
+import Loader from '@/components/Loader.vue'
+import { quizesAPI, userAPI } from '../utils/api'
 export default {
   data(){
     return {
@@ -48,9 +44,18 @@ export default {
       this.results = data
     })
   },
+  methods: {
+    shareResult(){
+      userAPI.publishQuizResult(this.user.id, this.$route.params.id, this.yourResult._id)
+      .then(() => {
+        this.$router.push(`/profile/${this.user.id}`)
+      })
+    }
+  },
   computed: {
     ...mapState(['user']),
     yourResult(){
+      console.log(this.results)
       const score = this.$route.params.score
       return this.results.filter(result => {
         if(score >= result.scoreRange.start && score <= result.scoreRange.end)
@@ -61,7 +66,7 @@ export default {
     }
   },
   components: {
-    Button
+    Button, Loader
   }
 }
 </script>

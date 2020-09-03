@@ -44,7 +44,7 @@ export default {
     this.$store.commit('addPath', path)
     const token = window.localStorage.getItem('token')
     if(token){
-      this.$store.dispatch('getUserData', token)
+      this.$store.dispatch('verify', token)
       .then(() => {
         this.$store.dispatch('redirect')
       })

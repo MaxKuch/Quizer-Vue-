@@ -32,7 +32,6 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
 import Form from '@/components/Form'
 import Button from '@/components/Button'
 import Alert from '@/components/Alert'
@@ -56,7 +55,6 @@ export default {
     buttonDisabled: false
   }),
   computed: {
-    ...mapState(['user']),
     nameErrors () {
       const errors = []
       if (!this.$v.name.$dirty) return errors
@@ -71,11 +69,6 @@ export default {
       !this.$v.password.required && errors.push('Введите пароль')
       return errors
     },
-  },
-  watch: {
-    user(){
-      console.log(this.user)
-    }
   },
   methods: {
     closeModal(){

@@ -8,12 +8,7 @@
     />
     <div class="wrapper d-flex justify-center">
       <div class="content-container">
-        <div v-if="loading" class="d-flex justify-center">
-          <v-progress-circular
-            indeterminate
-            color="#0434B0"
-          ></v-progress-circular>
-        </div>
+        <Loader v-if="loading"/>
         <QuizItem v-else
           v-for="quizItem in quizItems" 
           :key="quizItem.id"
@@ -31,6 +26,7 @@
 
 import QuizItem from '@/components/QuizItem.vue'
 import Alert from '@/components/Alert.vue'
+import Loader from '@/components/Loader.vue'
 import { quizesAPI } from '@/utils/api'
 export default {
   data() {
@@ -70,7 +66,7 @@ export default {
     }
   },
   components: {
-    QuizItem, Alert
+    QuizItem, Alert, Loader
   }
 }
 </script>
