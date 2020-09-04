@@ -9,22 +9,25 @@
             <h5 class="title-h5">
               {{user.name}}
             </h5>
-            <p class="parag">{{`Присоединился к нам`}}</p>
+            <p class="parag">{{`Присоединился к нам `}}{{user.created | distanceToNow}}</p>
           </div>
         </div>
         <div class="profile__results-list">
           <h2 class="title-h2">Результаты тестов</h2>
-          <div class="profile__result-item" v-for="result in user.results" :key="result.result.id">
-            <h2 class="title-h2">
-              <router-link :to="`/quiz/${result.quiz.id}`">{{result.quiz.title}}</router-link>
-            </h2>
-            <h4 class="title-h4">
-              {{result.result.title}}
-            </h4>
-            <p v-if="result.result.description" class="parag">
-              {{result.result.description}}
-            </p>
+          <div v-if="user.results.length"> 
+            <div class="profile__result-item" v-for="result in user.results" :key="result.result.id">
+              <h2 class="title-h2">
+                <router-link :to="`/quiz/${result.quiz.id}`">{{result.quiz.title}}</router-link>
+              </h2>
+              <h4 class="title-h4">
+                {{result.result.title}}
+              </h4>
+              <p v-if="result.result.description" class="parag">
+                {{result.result.description}}
+              </p>
+            </div>
           </div>
+          <h4 class="title-h4" v-else>Пройденных тестов пока нет</h4>
         </div>
       </div>
     </div>
@@ -32,6 +35,9 @@
 </template>
 
 <script>
+  import _ from 'lodash'
+  import { formatDistanceToNow } from 'date-fns'
+  import ruLocale from 'date-fns/locale/ru'
   import { userAPI } from '@/utils/api'
   import Loader from '@/components/Loader.vue'
   export default {
@@ -53,12 +59,22 @@
       userAPI.getUserData(userId)
       .then(({data: {data}}) => {
         this.loading = false
+        data.user.results = _.orderBy(data.user.results, ['created'], ['desc'])
         this.user = data.user
-        console.log(data.user)
+        this.user
       })
       .catch(err => {
         this.loading = false
       })
+    },
+    filters: {
+      distanceToNow(date){
+        if(!date) return ''
+        return formatDistanceToNow(new Date(date), {
+          locale: ruLocale,
+          addSuffix: true
+        })
+      }
     },
     components: {
       Loader

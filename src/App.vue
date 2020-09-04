@@ -19,11 +19,11 @@ export default {
   name: 'App',
   data() {
     return {
-        alert: {
-          timeout: null,
-          visible: false,
-          title: '',
-          message: ''
+      alert: {
+        timeout: null,
+        visible: false,
+        title: '',
+        message: ''
       }
     }
   },

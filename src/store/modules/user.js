@@ -54,6 +54,7 @@ export default({
   },
   getters: {
     getUserName: state => state.name,
-    getUserId: state => state.id
+    getUserId: state => state.id,
+    getIsUserAuth: state => state.isAuth
   }
 })

@@ -1,5 +1,12 @@
 <template>
   <section class="quiz-item">
+     <Alert 
+      :visible="alert.visible" 
+      :title="alert.title" 
+      :message="alert.message"
+      :closeModal="closeModal"
+      :type="alert.type"
+    />
     <div class="quiz-item__header d-flex flex-wrap">
       <h2 class="quiz-item__title title-h2">
         <router-link :to="`/quiz/${id}`">{{title}}</router-link>
@@ -11,9 +18,9 @@
     </div>
     <p class="parag">{{description}}</p>
     <div class="d-flex">
-      <div class="quiz-item__likes">
-        <v-icon size="16px">{{heartIcon}}</v-icon>
-        <span>{{likes}}</span>
+      <div @click="like" class="quiz-item__likes">
+        <v-icon size="16px">{{likesState.icon}}</v-icon>
+        <span>{{likesState.count}}</span>
       </div>
       <div class="quiz-item__comments">
         <v-icon size="20px">{{expandIcon}}</v-icon>
@@ -24,14 +31,92 @@
 </template>
 
 <script>
-import { mdiAccountCircle, mdiHeartOutline, mdiUnfoldMoreHorizontal } from '@mdi/js'
+import { mdiAccountCircle, mdiHeart, mdiHeartOutline, mdiUnfoldMoreHorizontal } from '@mdi/js'
+import { quizesAPI } from '@/utils/api'
+import Alert from '@/components/Alert'
+
 export default {
   props: ['title', 'author', 'description', 'likes', 'id'],
   data: () => ({
-      profileIcon: mdiAccountCircle,
-      heartIcon: mdiHeartOutline,
-      expandIcon: mdiUnfoldMoreHorizontal
+    profileIcon: mdiAccountCircle,
+    expandIcon: mdiUnfoldMoreHorizontal,
+    likesState: {
+      count: 0,
+      isLiked: false,
+      icon: mdiHeartOutline,
+    },
+    alert: {
+      timeout: null,
+      visible: false,
+      title: '',
+      message: '',
+      type: null
+    } 
   }),
+  mounted(){
+    this.likesState.count = this.likes.length
+    const userId = this.$store.getters.getUserId
+    if(userId){
+      if (this.likes.some(like => like.user === userId))
+        this.likesState.isLiked = true
+    }
+  },
+  methods: {
+    like() {
+      if(this.$store.getters.getIsUserAuth){
+        const userId = this.$store.getters.getUserId
+        const quizId = this.id
+        if(!this.likesState.isLiked){
+          this.likesState.count += 1
+          this.likesState.isLiked = true
+          quizesAPI.like(userId, quizId)
+          .catch(err => {
+            console.error(err.response)
+          })
+        }
+        else {
+          this.likesState.isLiked = false
+          this.likesState.count -= 1
+          quizesAPI.removeLike(userId, quizId)
+          .catch(err => {
+            console.error(err.response)
+          })
+        }
+      }
+      else if(!this.alert.visible){
+        this.alert.title = 'Внимание'
+        this.alert.message = 'Только авторизованные пользователи могут оценивать тесты'
+        this.alert.type = 'warning'
+        this.alert.visible = true
+        this.alert.timeout = setTimeout(() => {
+          this.closeModal()
+        }, 4000)
+      }
+    },
+    closeModal(){
+      this.alert.visible = false
+      clearTimeout(this.alert.timeout)
+      this.alert.timeout = null
+    }
+  },
+  computed: {
+    likesCount(){
+      return this.likesState.count
+    }
+  },
+  watch: {
+    likesCount(){
+      if(!this.likesState.isLiked){
+        this.likesState.icon = mdiHeartOutline
+      }
+      else{
+        this.likesState.icon = mdiHeart
+      }
+    }
+  },
+  components: {
+    Alert
+  }
 }
 </script>
 
@@ -76,6 +161,7 @@ export default {
   }
   
   &__likes{
+    cursor: pointer;
     margin-right: 10px;
     .theme--light.v-icon{
       color: $accent;

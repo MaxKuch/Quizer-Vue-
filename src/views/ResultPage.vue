@@ -55,7 +55,6 @@ export default {
   computed: {
     ...mapState(['user']),
     yourResult(){
-      console.log(this.results)
       const score = this.$route.params.score
       return this.results.filter(result => {
         if(score >= result.scoreRange.start && score <= result.scoreRange.end)

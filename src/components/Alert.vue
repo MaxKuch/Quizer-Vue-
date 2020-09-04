@@ -5,8 +5,8 @@
       prominent
       dismissible
       transition="slide-y-transition"
-      type="error"
-      color="red"
+      :type="this.type"
+      :color="this.color"
     >
       <v-row>
         <v-col class="grow">
@@ -27,6 +27,10 @@ export default {
     }
   },
   props: {
+    type: {
+      type: String,
+      default: 'error'
+    },
     visible: {
       type: Boolean,
       default: false
@@ -39,6 +43,14 @@ export default {
     },
     closeModal: {
       type: Function
+    }
+  },
+  computed: {
+    color(){
+      if(this.type === 'error')
+        return 'red'
+      if(this.type === 'warning')
+        return 'orange'
     }
   },
   watch: { 
