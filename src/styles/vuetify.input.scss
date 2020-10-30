@@ -1,7 +1,10 @@
 .theme--light.v-input{
   color: $accent!important;
-  input, .theme--light.v-input textarea{
+  input, textarea{
     color: $text!important;
+  }
+  textarea::placeholder{
+    color: $inputLabelColor!important;
   }
   &.error--text{
     color: $error!important;

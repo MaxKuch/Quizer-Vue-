@@ -4,7 +4,10 @@
       <Loader v-if="loading"/>
       <div v-else-if="user" class="profile">
         <div class="profile__user d-flex align-center">
-          <img src="../assets/logo.png" alt="profile-avatar" class="profile__user-avatar">
+          <div class="flex-shrink-0">
+            <Avatar size="80"/>
+          </div>
+          
           <div class="profile__user-info">
             <h5 class="title-h5">
               {{user.name}}
@@ -36,10 +39,9 @@
 
 <script>
   import _ from 'lodash'
-  import { formatDistanceToNow } from 'date-fns'
-  import ruLocale from 'date-fns/locale/ru'
   import { userAPI } from '@/utils/api'
   import Loader from '@/components/Loader.vue'
+  import Avatar from '@/components/Avatar.vue'
   export default {
     data: () => ({
       loading: false,
@@ -67,17 +69,8 @@
         this.loading = false
       })
     },
-    filters: {
-      distanceToNow(date){
-        if(!date) return ''
-        return formatDistanceToNow(new Date(date), {
-          locale: ruLocale,
-          addSuffix: true
-        })
-      }
-    },
     components: {
-      Loader
+      Loader, Avatar
     }
   }
 </script>
@@ -98,6 +91,7 @@
           text-transform: uppercase;
         }
         p{
+          opacity: .5;
           font-size: 16px;
           margin: 0;
         }

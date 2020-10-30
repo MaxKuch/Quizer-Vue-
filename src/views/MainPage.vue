@@ -17,13 +17,15 @@
           :author="quizItem.author"
           :description="quizItem.description"
           :likes="quizItem.likes"
+          :likesAmount="quizItem.likesAmount"
+          :comments="quizItem.comments"
         />
       </div>
     </div>
   </div>
 </template>
 <script>
-
+import _ from 'lodash'
 import QuizItem from '@/components/QuizItem.vue'
 import Alert from '@/components/Alert.vue'
 import Loader from '@/components/Loader.vue'
@@ -46,7 +48,8 @@ export default {
     quizesAPI.quizesList()
     .then(({data})=> {
       this.loading = false
-      this.quizItems = data
+      this.quizItems = _.orderBy(data, ['likesAmount'], ['desc'])
+
     })
     .catch(err => {
       this.loading = false

@@ -28,5 +28,10 @@ export const quizesAPI = {
   removeLike: (userId, quizId) => axios.post('/remove-like', {
     userId,
     quizId
+  }),
+  sendComment: (userId, quizId, text) => axios.post('/add-comment', {
+    userId,
+    quizId,
+    text
   })
 }

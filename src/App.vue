@@ -40,7 +40,8 @@ export default {
     }
   },
   mounted(){
-    const path = new URL(location.href).pathname.slice(1)
+    const pathEnd = new URL(location.href).pathname.indexOf('/', 1)
+    const path = pathEnd > 0 ? new URL(location.href).pathname.slice(1, pathEnd) : new URL(location.href).pathname.slice(1)
     this.$store.commit('addPath', path)
     const token = window.localStorage.getItem('token')
     if(token){

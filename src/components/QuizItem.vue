@@ -22,21 +22,50 @@
         <v-icon size="16px">{{likesState.icon}}</v-icon>
         <span>{{likesState.count}}</span>
       </div>
-      <div class="quiz-item__comments">
-        <v-icon size="20px">{{expandIcon}}</v-icon>
-        <span>Комментарии</span>
-      </div>
+        <div @click="toggleCommentsVisibility" class="quiz-item__expand-comments">
+          <v-icon size="20px">{{expandIcon}}</v-icon>
+          <span>Комментарии</span>
+        </div>
+    </div>
+    <div v-if="commentsVisibility" class="quiz-item__comments">
+       <div v-if="$store.getters.getIsUserAuth" class="quiz-item__comments-input">
+           <div class="d-flex align-end">
+              <v-textarea
+                v-model="$v.inputComment.$model"
+                :error-messages="commentErrors"
+                rows="1"
+                auto-grow
+                placeholder="Добавьте комментарий"
+              ></v-textarea>
+              <v-btn :disabled="buttonDisabled" @click="sendComment" small color="">Отправить</v-btn>
+           </div>
+        </div>
+        <div class="quiz-item__comment-items">
+          <CommentItem 
+            v-for="comment in commentsState" 
+            :comment="comment"
+            :key="comment.id"
+          />
+        </div>
     </div>
   </section>
 </template>
 
 <script>
+import { validationMixin } from 'vuelidate'
+import { maxLength } from 'vuelidate/lib/validators'
+import _ from 'lodash'
 import { mdiAccountCircle, mdiHeart, mdiHeartOutline, mdiUnfoldMoreHorizontal } from '@mdi/js'
 import { quizesAPI } from '@/utils/api'
 import Alert from '@/components/Alert'
+import CommentItem from '@/components/CommentItem'
 
 export default {
-  props: ['title', 'author', 'description', 'likes', 'id'],
+  mixins: [validationMixin],
+  validations: {
+    inputComment: {maxLength: maxLength(500)}
+  },
+  props: ['title', 'author', 'description', 'likes', 'likesAmount', 'comments', 'id'],
   data: () => ({
     profileIcon: mdiAccountCircle,
     expandIcon: mdiUnfoldMoreHorizontal,
@@ -51,11 +80,16 @@ export default {
       title: '',
       message: '',
       type: null
-    } 
+    },
+    commentsVisibility: false,
+    inputComment: '',
+    buttonDisabled: true,
+    commentsState: []
   }),
   mounted(){
-    this.likesState.count = this.likes.length
+    this.likesState.count = this.likesAmount
     const userId = this.$store.getters.getUserId
+    this.commentsState = _.orderBy(this.comments, ['created'], ['desc'])
     if(userId){
       if (this.likes.some(like => like.user === userId))
         this.likesState.isLiked = true
@@ -93,16 +127,53 @@ export default {
         }, 4000)
       }
     },
-    closeModal(){
+    sendComment() {
+      const userId = this.$store.getters.getUserId
+      const quizId = this.id
+      const text = this.inputComment
+      this.commentsState.unshift({
+        id: Date.now(),
+        created: new Date(),
+        text,
+        author: {
+          id: userId,
+          username: this.$store.getters.getUserName
+        }
+      })
+      quizesAPI.sendComment(userId, quizId, text)
+      .then(() => {
+        this.inputComment = ''
+      })
+      .catch(err => {
+        const {data: {message, status}} = err
+        this.alert.title = status
+        this.alert.message = message
+        this.alert.visible = true
+        this.alert.timeout = setTimeout(() => {
+          this.closeModal()
+        }, 4000)
+      })
+    },
+    toggleCommentsVisibility(){
+      this.commentsVisibility = !this.commentsVisibility
+    },
+    closeModal() {
       this.alert.visible = false
       clearTimeout(this.alert.timeout)
       this.alert.timeout = null
     }
   },
   computed: {
+    commentErrors(){
+      const errors = []
+      console.log(this.$v.inputComment)
+      !this.$v.inputComment.maxLength
+      && errors.push(`Максимальная длина комментария - ${this.$v.inputComment.$params.maxLength.max} символов`)
+      return errors
+    },
     likesCount(){
       return this.likesState.count
-    }
+    },
   },
   watch: {
     likesCount(){
@@ -112,10 +183,20 @@ export default {
       else{
         this.likesState.icon = mdiHeart
       }
+    },
+    inputComment(){
+      if(this.inputComment)
+        this.buttonDisabled = false
+      else
+        this.buttonDisabled = true
+    },
+    commentErrors(){
+      if(this.$v.inputComment.$invalid)
+        this.buttonDisabled = true
     }
   },
   components: {
-    Alert
+    Alert, CommentItem
   }
 }
 </script>
@@ -176,7 +257,27 @@ export default {
       color: $text;
     }
   }
+
   &__comments{
+    &-input{
+      button{
+        background-color: $accent!important;
+        color: $text!important;
+        margin-left: 10px;
+        margin-bottom: 20px;
+        &.theme--light.v-btn.v-btn--disabled{
+          color: $inputLabelColor!important;
+        }
+      }
+    }
+  }
+  
+  &__comment-items{
+    margin-top: 10px;
+  }
+
+  &__expand-comments{
+    cursor: pointer;
     .theme--light.v-icon{
       color: $accent;
       margin-right: 3px;

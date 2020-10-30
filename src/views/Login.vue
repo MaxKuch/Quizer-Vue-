@@ -65,8 +65,10 @@ export default {
     passwordErrors () {
       const errors = []
       if (!this.$v.password.$dirty) return errors
-      !this.$v.password.minLength && errors.push(`Пароль должен содержать хотя бы ${this.$v.password.$params.minLength.min} символов`)
-      !this.$v.password.required && errors.push('Введите пароль')
+      !this.$v.password.minLength 
+      && errors.push(`Пароль должен содержать хотя бы ${this.$v.password.$params.minLength.min} символов`)
+      !this.$v.password.required 
+      && errors.push('Введите пароль')
       return errors
     },
   },
