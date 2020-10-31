@@ -52,22 +52,21 @@
         description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quis tempus a enim tellus id. Elementum fringilla id suspendisse id et. Odio semper in pulvinar elementum urna, sit. Ullamcorper eget laoreet vel tincidunt vitae mauris porttitor. '
       }]
     }),
-    mounted(){
+    async mounted(){
       const userId = this.$route.params.id
       if(userId === this.$store.getters.getUserId){
         this.isMe = true
       }
       this.loading = true
-      userAPI.getUserData(userId)
-      .then(({data: {data}}) => {
+      try{
+        const {data: {data}} = await userAPI.getUserData(userId)
         this.loading = false
         data.user.results = _.orderBy(data.user.results, ['created'], ['desc'])
         this.user = data.user
         this.user
-      })
-      .catch(err => {
+      } catch(err) {
         this.loading = false
-      })
+      }
     },
     components: {
       Loader, Avatar

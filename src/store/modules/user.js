@@ -7,10 +7,9 @@ export default({
         const {data: {data}} = await userAPI.verify(token)
         const user = data.user
         ctx.commit('updateUser', {name: user.name, id: user.id, isAuth: true})
-        return Promise.resolve()
       } catch(err){
         console.error(err)
-        return Promise.reject(err.response)
+        throw err.response
       }
     },
     async login(ctx, postData){
@@ -19,9 +18,8 @@ export default({
         window.localStorage.setItem('token', data.jwt)
         const user = data.user
         ctx.commit('updateUser', {name: user.name, id: user.id, isAuth: true})
-        return Promise.resolve()
       } catch(err){
-        return Promise.reject(err.response)
+        throw err.response
       }
     },
     async register(ctx, postData){
@@ -30,9 +28,8 @@ export default({
         window.localStorage.setItem('token', data.jwt)
         const user = data.user
         ctx.commit('updateUser', {name: user.name, id: user.id, isAuth: true})
-        return Promise.resolve()
       } catch(err){
-        return Promise.reject(err.response)
+        throw err.response
       }
     },
     logout(ctx){

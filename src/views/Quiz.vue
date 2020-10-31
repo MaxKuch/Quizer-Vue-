@@ -88,14 +88,16 @@ export default {
     totalScore: null,
     currentOption: null
   }},
-  mounted(){
+  async mounted(){
     this.loading = true
-    quizesAPI.getQuiz(this.$route.params.id)
-    .then(({data}) => {
+    try{
+      const {data} = await quizesAPI.getQuiz(this.$route.params.id)
       this.loading = false
       this.questions = data.questions
       this.quizId = data.id
-    })
+    } catch(err){
+      console.error(err)
+    }
   },
   methods: {
     nextQuestion() {

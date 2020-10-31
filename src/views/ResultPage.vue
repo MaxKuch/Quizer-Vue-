@@ -36,20 +36,25 @@ export default {
       loading: false
     }
   },
-  mounted(){
+  async mounted(){
     this.loading = true
-    quizesAPI.getQuizResults(this.$route.params.id)
-    .then(({data}) => {
+    try{
+      const {data} = quizesAPI.getQuizResults(this.$route.params.id)
       this.loading = false
       this.results = data
-    })
+    }
+    catch(err){
+      console.error(err)
+    }
   },
   methods: {
-    shareResult(){
-      userAPI.publishQuizResult(this.user.id, this.$route.params.id, this.yourResult._id)
-      .then(() => {
+    async shareResult(){
+      try{
+        await userAPI.publishQuizResult(this.user.id, this.$route.params.id, this.yourResult._id)
         this.$router.push(`/profile/${this.user.id}`)
-      })
+      } catch(err){
+        console.error(err)
+      }
     }
   },
   computed: {

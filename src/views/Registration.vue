@@ -80,7 +80,7 @@ export default {
       clearTimeout(this.alert.timeout)
       this.alert.timeout = null
     },
-    submit () {
+    async submit () {
       this.$v.$touch()
       if(this.$v.$invalid)
         return
@@ -90,8 +90,8 @@ export default {
         password: this.password
       }
       this.buttonDisabled = true
-      this.$store.dispatch('register', data)
-      .then(() => {
+      try{
+        await this.$store.dispatch('register', data)
         this.name = ''
         this.email = ''
         this.password = ''
@@ -99,8 +99,7 @@ export default {
         this.$v.$reset()
         this.buttonDisabled = false
         this.$router.push('/')
-      })
-      .catch((err) => {
+      } catch(err){
         const {data: {message, status}} = err
         this.alert.title = status
         this.alert.message = message
@@ -109,7 +108,7 @@ export default {
           this.closeModal()
         }, 4000)
         this.buttonDisabled = false
-      })
+      }
     }
   },
   components:{

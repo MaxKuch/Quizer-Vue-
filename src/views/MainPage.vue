@@ -43,15 +43,13 @@ export default {
       }
     }
   },
-  mounted(){
+  async mounted(){
     this.loading = true
-    quizesAPI.quizesList()
-    .then(({data})=> {
+    try{
+      const {data} = await quizesAPI.quizesList()
       this.loading = false
       this.quizItems = _.orderBy(data, ['likesAmount'], ['desc'])
-
-    })
-    .catch(err => {
+    } catch(err) {
       this.loading = false
       this.alert.title = status
       this.alert.message = message
@@ -59,7 +57,7 @@ export default {
       this.alert.timeout = setTimeout(() => {
         this.closeModal()
       }, 4000)
-    })
+    }
   },
   methods: {
     closeModal(){

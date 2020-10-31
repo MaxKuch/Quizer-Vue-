@@ -96,25 +96,27 @@ export default {
     }
   },
   methods: {
-    like() {
+    async like() {
       if(this.$store.getters.getIsUserAuth){
         const userId = this.$store.getters.getUserId
         const quizId = this.id
         if(!this.likesState.isLiked){
           this.likesState.count += 1
           this.likesState.isLiked = true
-          quizesAPI.like(userId, quizId)
-          .catch(err => {
+          try{
+            await quizesAPI.like(userId, quizId)
+          } catch(err) {
             console.error(err.response)
-          })
+          }
         }
         else {
           this.likesState.isLiked = false
           this.likesState.count -= 1
-          quizesAPI.removeLike(userId, quizId)
-          .catch(err => {
+          try{
+            await quizesAPI.removeLike(userId, quizId)
+          } catch(err) {
             console.error(err.response)
-          })
+          }
         }
       }
       else if(!this.alert.visible){
@@ -127,7 +129,7 @@ export default {
         }, 4000)
       }
     },
-    sendComment() {
+    async sendComment() {
       const userId = this.$store.getters.getUserId
       const quizId = this.id
       const text = this.inputComment
@@ -140,11 +142,11 @@ export default {
           username: this.$store.getters.getUserName
         }
       })
-      quizesAPI.sendComment(userId, quizId, text)
-      .then(() => {
+      try {
+        await quizesAPI.sendComment(userId, quizId, text)
         this.inputComment = ''
-      })
-      .catch(err => {
+      }
+      catch(err) {
         const {data: {message, status}} = err
         this.alert.title = status
         this.alert.message = message
@@ -152,7 +154,7 @@ export default {
         this.alert.timeout = setTimeout(() => {
           this.closeModal()
         }, 4000)
-      })
+      }
     },
     toggleCommentsVisibility(){
       this.commentsVisibility = !this.commentsVisibility

@@ -39,17 +39,16 @@ export default {
       this.alert.timeout = null
     }
   },
-  mounted(){
+  async mounted(){
     const pathEnd = new URL(location.href).pathname.indexOf('/', 1)
     const path = pathEnd > 0 ? new URL(location.href).pathname.slice(1, pathEnd) : new URL(location.href).pathname.slice(1)
     this.$store.commit('addPath', path)
     const token = window.localStorage.getItem('token')
     if(token){
-      this.$store.dispatch('verify', token)
-      .then(() => {
+      try {
+        await this.$store.dispatch('verify', token)
         this.$store.dispatch('redirect')
-      })
-      .catch((err) => {
+      } catch(err){
         const {data: {message, status}} = err
         this.alert.title = status
         this.alert.message = message
@@ -57,7 +56,7 @@ export default {
         this.alert.timeout = setTimeout(() => {
           this.closeModal()
         }, 4000)
-      })
+      }
     }
     else{
       this.$store.dispatch('redirect')
